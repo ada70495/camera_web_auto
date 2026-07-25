@@ -1,0 +1,10 @@
+# 测试框架
+pytest
+# UI自动化引擎
+playwright
+# 可视化报告
+allure-pytest
+# yaml解析
+pyyaml
+# 内置日志
+logging

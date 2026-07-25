@@ -1,0 +1,10 @@
+# 本地私密配置
+config/env_XXX.yaml
+report/logs/
+report/allure_raw/
+report/allure_html/
+__pycache__/
+*.pyc
+.DS_Store
+.idea/
+.vscode/

@@ -1,0 +1,53 @@
+# ============================================
+# UI 自动化 - 环境编排
+#   1. admin-site：本地后台管理站点（Flask，9100）
+#   2. ui-test：Playwright 官方镜像执行用例（自带浏览器内核）
+#
+# 用法：
+#   docker compose up -d admin-site          # 只起站点
+#   docker compose run --rm ui-test          # 容器内跑全量用例
+#   docker compose down
+# ============================================
+
+services:
+  admin-site:
+    image: python:3.11-slim
+    container_name: mock-admin-web
+    working_dir: /app
+    volumes:
+      - ./:/app
+    command: >
+      sh -c "pip install -q -i https://pypi.tuna.tsinghua.edu.cn/simple flask
+             && python mock_site/app.py"
+    environment:
+      PORT: "9100"
+      ADMIN_USER: "testuser"
+      ADMIN_PWD: "123456"
+    ports:
+      - "9100:9100"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://127.0.0.1:9100/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  ui-test:
+    # 官方镜像自带 Chromium，避免容器内再下载浏览器
+    image: mcr.microsoft.com/playwright/python:v1.49.0-jammy
+    container_name: admin-ui-test
+    working_dir: /app
+    volumes:
+      - ./:/app
+    depends_on:
+      admin-site:
+        condition: service_healthy
+    environment:
+      ENV: "ci"
+      BASE_URL: "http://admin-site:9100"
+      HEADLESS: "true"
+    command: >
+      sh -c "pip install -q -i https://pypi.tuna.tsinghua.edu.cn/simple
+             pytest allure-pytest pytest-rerunfailures pyyaml loguru requests flask
+             && python -m pytest"
+    profiles: ["test"]

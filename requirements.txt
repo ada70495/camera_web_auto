@@ -1,10 +1,14 @@
-# 测试框架
-pytest
-# UI自动化引擎
-playwright
-# 可视化报告
-allure-pytest
-# yaml解析
-pyyaml
-# 内置日志
-logging
+# UI 自动化框架依赖
+pytest>=8.0
+# 浏览器自动化引擎（安装后需执行：playwright install chromium）
+playwright>=1.40
+# 报告
+allure-pytest>=2.13
+pytest-rerunfailures>=14.0
+# 配置与日志
+pyyaml>=6.0
+loguru>=0.7
+requests>=2.31
+
+# 本地后台站点（mock_site/app.py）
+flask>=3.0

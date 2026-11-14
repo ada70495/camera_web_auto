@@ -1,0 +1,27 @@
+# UI 自动化测试数据：与用例代码解耦，改数据不用改代码
+
+# 相册管理
+album:
+  search_keyword: "日常照片"
+  initial_count: 3
+
+# 相机配置
+camera:
+  default:
+    resolution: "1080P"
+    fps: 30
+  high:
+    resolution: "4K"
+    fps: 60
+
+# 浏览器配置
+browser:
+  collect_limit: 200
+
+# DJ 音乐播放器
+dj:
+  volume: 60
+  eq: "rock"
+  eq_text: "摇滚"
+  play_mode: "loop"
+  play_mode_text: "列表循环"

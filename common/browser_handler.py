@@ -1,20 +1,32 @@
+"""Playwright 浏览器引擎
+
+与旧版的关键区别：不再在 import 时启动浏览器，改为由 fixture 显式创建，
+并支持配置驱动的无头模式与每用例独立上下文（互不污染 cookie / 缓存）。
+"""
 from playwright.sync_api import sync_playwright
 
+from common.conf_handler import config
+from common.logger_handler import logger
+
+
 class BrowserEngine:
-    def __init__(self):
-        # 启动playwright引擎
-        self.play = sync_playwright().start()
-        # 启动chrome浏览器，headless=False可视化调试，上线改为True无头
-        self.browser = self.play.chromium.launch(headless=False)
-        # 创建浏览器上下文（可隔离cookie、缓存）
-        self.context = self.browser.new_context()
-        # 新建标签页
-        self.page = self.context.new_page()
+    def __init__(self, headless: bool = None):
+        self.playwright = sync_playwright().start()
+        headless = config.headless if headless is None else headless
+        self.browser = self.playwright.chromium.launch(headless=headless, slow_mo=config.slow_mo)
+        logger.info(f"浏览器已启动 headless={headless} slow_mo={config.slow_mo}")
 
-    def close_all(self):
-        # 全部用例跑完关闭浏览器、引擎
+    def new_page(self, viewport: dict = None):
+        """每个用例一个独立 context + page，避免用例之间串数据"""
+        context = self.browser.new_context(
+            viewport=viewport or {"width": 1440, "height": 900},
+            ignore_https_errors=True,
+        )
+        page = context.new_page()
+        page.set_default_timeout(config.timeout)
+        return context, page
+
+    def close(self):
         self.browser.close()
-        self.play.stop()
-
-# 全局唯一浏览器实例
-web_driver = BrowserEngine()
+        self.playwright.stop()
+        logger.info("浏览器已关闭")

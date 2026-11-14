@@ -2,6 +2,7 @@
 
 后台管理站点的 UI 自动化测试工程，用 Playwright 驱动 Chromium，按 PO（Page Object）分层，
 覆盖相册管理、相机配置、浏览器配置、DJ 音乐播放器四个页面。
+技术栈：Python 3.13 + pytest + Playwright（Chromium）+ PyYAML + Allure + loguru，被测站点用 Flask 起在本地。
 
 被测站点是仓库内的一个 Flask 应用（`mock_site/app.py`），带登录页和四个功能页，
 元素结构和 `page_objects/` 里的定位器一一对应。克隆仓库、装好浏览器内核就能跑，当前 8 条用例。

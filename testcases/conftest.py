@@ -1,4 +1,4 @@
-"""全局 fixture：浏览器引擎 / 页面 / 登录 / 站点数据复位"""
+"""全局 fixture：站点复位 / 浏览器引擎 / 已登录页面"""
 import os
 import sys
 
@@ -49,13 +49,7 @@ def page(engine):
 
 @pytest.fixture()
 def anon_page(engine):
-    """未登录页面，用于验证登录拦截"""
+    """未登录页面，用于验证访问控制"""
     context, page = engine.new_page()
     yield page
     context.close()
-
-
-@pytest.fixture()
-def fresh_site():
-    """破坏性用例（如批量删除）执行前复位站点数据"""
-    requests.post(f"{config.base_url}/__admin/reset", timeout=5)

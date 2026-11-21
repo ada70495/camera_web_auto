@@ -13,6 +13,10 @@ camera:
     fps: 15
   over_limit_fps: 61
   under_limit_fps: 14
+  upper_limit_fps: 60
+  second:
+    resolution: "720P"
+    fps: 15
   position:
     top: "top"
     top_text: "顶部"

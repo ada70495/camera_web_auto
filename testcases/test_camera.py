@@ -152,3 +152,31 @@ class TestCameraWeb:
     def test_camera_requires_login(self, anon_page):
         anon_page.goto(f"{config.base_url}/camera")
         assert "/login" in anon_page.url, "未登录访问配置页应跳转到登录页"
+
+    @allure.story("帧率上限边界值")
+    def test_camera_fps_upper_boundary(self, page):
+        cam = CameraConfigPage(page)
+        cam.enter_camera_page()
+
+        cam.set_camera_param(DATA["default"]["resolution"], DATA["upper_limit_fps"])
+        cam.save_config()
+
+        assert "配置保存成功" in cam.tip_text(), "60fps 属于合法上限，应保存成功"
+        preview = cam.current_preview()
+        assert f"{DATA['upper_limit_fps']}fps" in preview, "回显帧率应为 60fps"
+
+    @allure.story("连续保存以最后一次为准")
+    def test_camera_resave_takes_effect(self, page):
+        cam = CameraConfigPage(page)
+        cam.enter_camera_page()
+
+        cam.set_camera_param(DATA["high"]["resolution"], DATA["high"]["fps"])
+        cam.save_config()
+
+        cam.set_camera_param(DATA["second"]["resolution"], DATA["second"]["fps"])
+        cam.save_config()
+
+        preview = cam.current_preview()
+        assert DATA["second"]["resolution"] in preview, "回显分辨率应切换为 720P"
+        assert f"{DATA['second']['fps']}fps" in preview, "回显帧率应为 15fps"
+        assert DATA["high"]["resolution"] not in preview, "上一次保存的 4K 不应残留在回显里"
